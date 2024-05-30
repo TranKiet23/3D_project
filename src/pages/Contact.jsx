@@ -1,22 +1,26 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, Suspense } from 'react'
 import emailjs from '@emailjs/browser'
+import { Canvas } from '@react-three/fiber'
+import { Fox }from '../models/Fox'
+import Loader from '../components/Loader'
 
 const Contact = () => {
   const formRef = useRef(null)
   const [form, setForm] = useState({ name: '', email: '', message: '' })
   const [isLoading, setIsLoading] = useState(false)
-  const handleChange = (e) => {
-    setForm({ [e.target.name]: e.target.value })
-    e.preventDefault()
-
-  }
-  const handleFocus = (evt) => {
-  }
-  const handleBlur = (evt) => {
-  }
+  const [currentAnimation, setCurrentAnimation] = useState('idle')
+  const handleChange = ({ target: { name, value } }) => {
+    console.log("🚀 ~ handleChange ~ value:", value)
+    console.log("🚀 ~ handleChange ~ name:", name)
+    setForm({ ...form, [name]: value });
+    console.log(form, "form");
+  };
+  const handleFocus = (evt) => setCurrentAnimation('walk')
+  const handleBlur = (evt) => setCurrentAnimation('idle')
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setCurrentAnimation('hit')
     emailjs.send(
       import.meta.env.VITE_APP_EMAIL_SERVICE_ID,
       import.meta.env.VITE_APP_EMAIL_TEMPLATE_ID,
@@ -27,42 +31,56 @@ const Contact = () => {
         to_email: 'kiet.tran@mekship.com',
         message: form.message
       },
-      import.meta.env.VITE_APP_EMAIL_PUBLIC_ID,
+      import.meta.env.VITE_APP_EMAIL_PUBLIC_KEY,
 
     ).then((res) => {
-      console.log(22222);
       setIsLoading(false)
-      setForm({ name: '', email: '', message: '' })
-    }).catch((err)=> {
-      console.log("🚀 ~ ).then ~ err:", err)
+      setTimeout(() => {
+        setForm({ name: '', email: '', message: '' })
+        setCurrentAnimation('idle')
+      }, [3000]);
+     
+    }).catch((err) => {
       setIsLoading(false)
+      setCurrentAnimation('idle')
     })
   }
-    return (
-      <div className='relative flex lg:flex-row max-container'>
-        <div className="flex-1 min-w-[50%] flex flex-col">
-          <h1 className="head-text">Get on Touch</h1>
-          <form className="w-full flex flex-col gap-7 mt-14"  onSubmit={handleSubmit}>
-            <label className="text-black-500 font-semibold">
-              Name
-              <input type="text" placeholder='Join' className='input' onBlur={handleBlur} onFocus={handleFocus} onChange={handleChange} value={form.name} />
-            </label>
-            <label className="text-black-500 font-semibold">
-              Email
-              <input type="text" placeholder='join@gmail.com' className='input' onBlur={handleBlur} onFocus={handleFocus} onChange={handleChange} value={form.email} />
-            </label>
-            <label className="text-black-500 font-semibold">
-              Your Message
-              <textarea type="text" rows={4} placeholder='let me know how I can help you' className='textarea' onBlur={handleBlur} onFocus={handleFocus} onChange={(e) => { handleChange(e, 'message') }} value={form.message} />
-            </label>
+  return (
+    <div className='relative flex lg:flex-row max-container'>
+      <div className="flex-1 min-w-[50%] flex flex-col">
+        <h1 className="head-text">Get on Touch</h1>
+        <form className="w-full flex flex-col gap-7 mt-14" onSubmit={handleSubmit}>
+          <label className="text-black-500 font-semibold">
+            Name
+            <input type="text" placeholder='Join' className='input' onBlur={handleBlur} onFocus={handleFocus} onChange={handleChange} value={form.name} />
+          </label>
+          <label className="text-black-500 font-semibold">
+            Email
+            <input type="text" placeholder='join@gmail.com' className='input' onBlur={handleBlur} onFocus={handleFocus} onChange={handleChange} value={form.email} />
+          </label>
+          <label className="text-black-500 font-semibold">
+            Your Message
+            <textarea type="text" rows={4} placeholder='let me know how I can help you' className='textarea' onBlur={handleBlur} onFocus={handleFocus} onChange={(e) => { handleChange(e, 'message') }} value={form.message} />
+          </label>
 
-            <button type='submit' className='btn' disabled={isLoading} onBlur={handleBlur} onFocus={handleFocus}>
-              {isLoading ? 'Sending...' : 'Send Message...'}
-            </button>
-          </form>
-        </div>
+          <button type='submit' className='btn' disabled={isLoading} onBlur={handleBlur} onFocus={handleFocus}>
+            {isLoading ? 'Sending...' : 'Send Message...'}
+          </button>
+        </form>
       </div>
-    )
-  }
+      <div className='lg:w-1/2 w-full lg:h-auto md:h-[550px] h-[350px]'>
+        <Canvas
+          camera={{ position: [0, 0, 5], fov: 75, near: 0.1, far: 1000 } }
+        >
+          <directionalLight intensity={2.5} position={[0,0,1]} />
+          <ambientLight st />
+          <Suspense fallback={<Loader />}>
+            <Fox currentAnimation={currentAnimation} position={[0.5,0.35,0]} rotate={[12.6,-0.6,0]} scale={[0.6,0.5,0.5]}></Fox>
+          </Suspense>
+        </Canvas>
+      </div>
+    </div>
+  )
+}
 
-  export default Contact
+export default Contact
