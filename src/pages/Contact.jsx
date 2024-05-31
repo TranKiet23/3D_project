@@ -14,8 +14,8 @@ const Contact = () => {
     setForm({...form,  [name]: value});
 
   };
-  const handleFocus = (evt) => setCurrentAnimation('walk')
-  const handleBlur = (evt) => setCurrentAnimation('idle')
+  const handleFocus = (e) => setCurrentAnimation('walk')
+  const handleBlur = (e) => setCurrentAnimation('idle')
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsLoading(true);
