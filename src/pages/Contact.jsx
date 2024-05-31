@@ -9,11 +9,10 @@ const Contact = () => {
   const [form, setForm] = useState({ name: '', email: '', message: '' })
   const [isLoading, setIsLoading] = useState(false)
   const [currentAnimation, setCurrentAnimation] = useState('idle')
-  const handleChange = ({ target: { name, value } }) => {
-    console.log("🚀 ~ handleChange ~ value:", value)
-    console.log("🚀 ~ handleChange ~ name:", name)
-    setForm({ ...form, [name]: value });
-    console.log(form, "form");
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm({...form,  [name]: value});
+
   };
   const handleFocus = (evt) => setCurrentAnimation('walk')
   const handleBlur = (evt) => setCurrentAnimation('idle')
@@ -52,15 +51,15 @@ const Contact = () => {
         <form className="w-full flex flex-col gap-7 mt-14" onSubmit={handleSubmit}>
           <label className="text-black-500 font-semibold">
             Name
-            <input type="text" placeholder='Join' className='input' onBlur={handleBlur} onFocus={handleFocus} onChange={handleChange} value={form.name} />
+            <input type="text" placeholder='Join' className='input' onBlur={handleBlur} onFocus={handleFocus} onChange={handleChange} value={form.name} id='name' name='name' />
           </label>
           <label className="text-black-500 font-semibold">
             Email
-            <input type="text" placeholder='join@gmail.com' className='input' onBlur={handleBlur} onFocus={handleFocus} onChange={handleChange} value={form.email} />
+            <input type="email" placeholder='join@gmail.com' className='input' onBlur={handleBlur} onFocus={handleFocus} onChange={handleChange} value={form.email} name='email' />
           </label>
           <label className="text-black-500 font-semibold">
             Your Message
-            <textarea type="text" rows={4} placeholder='let me know how I can help you' className='textarea' onBlur={handleBlur} onFocus={handleFocus} onChange={(e) => { handleChange(e, 'message') }} value={form.message} />
+            <textarea type="text" rows={4} placeholder='let me know how I can help you' className='textarea' onBlur={handleBlur} onFocus={handleFocus} onChange={handleChange} value={form.message} name='message' />
           </label>
 
           <button type='submit' className='btn' disabled={isLoading} onBlur={handleBlur} onFocus={handleFocus}>
